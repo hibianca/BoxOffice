@@ -7,55 +7,64 @@
 
 import UIKit
 
-extension FeaturedViewController{
+extension FeaturedViewController: UICollectionViewDataSource {
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         
         if collectionView == self.popularCollectionView{
             return popularMovies.count
             //<.count> diz pra colocar na collection view a quantidade que tem de itens
-        
+            
         } else if collectionView == self.nowPlayingCollectionView {
             return nowPlayingMovies.count
-        
+            
         } else {
             return 0
-        
         }
     }
-    
-    fileprivate func makePopularCell(_ indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = popularCollectionView.dequeueReusableCell(withReuseIdentifier: "popularCell", for: indexPath) as? PopularCollectionViewCell
-        
-        cell?.titleLabel.text = popularMovies[indexPath.item].title
-        //<index.Path> acessa todos os filmes
-        //<.title> diz o que quer do conjunto de informações do filme
-        cell?.image.image = UIImage(named: popularMovies[indexPath.item].backdrop)
-        
-        return cell ?? UICollectionViewCell()
-    }
-    
-    fileprivate func makeNowPlayingCell(_ indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = nowPlayingCollectionView.dequeueReusableCell(withReuseIdentifier: "nowPlayingCell", for: indexPath) as? NowPlayingCollectionViewCell
-        
-        cell?.titleLabel.text = nowPlayingMovies[indexPath.item].title
-        cell?.dateLabel.text = nowPlayingMovies[indexPath.item].releaseDate
-        cell?.image.image = UIImage(named: nowPlayingMovies[indexPath.item].poster)
-        
-        return cell ?? UICollectionViewCell()
-    }
+    //pega do modelo para a view
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         
-        if collectionView == self.popularCollectionView{
+        if collectionView == popularCollectionView{
             return makePopularCell(indexPath)
-        
-        } else if collectionView == self.nowPlayingCollectionView{
+            
+        } else if collectionView == nowPlayingCollectionView{
             return makeNowPlayingCell(indexPath)
-        
+            
         } else {
             return UICollectionViewCell()
-            
         }
+    }
+    
+    fileprivate func makePopularCell(_ indexPath: IndexPath) -> PopularCollectionViewCell {
+        let cell = popularCollectionView.dequeueReusableCell(withReuseIdentifier: PopularCollectionViewCell.cellIdentifier, for: indexPath) as? PopularCollectionViewCell
+        
+        cell?.setup(title: popularMovies[indexPath.item].title, image: UIImage(named: popularMovies[indexPath.item].backdrop) ?? UIImage())
+        
+        /*cell?.titleLabel.text = popularMovies[indexPath.item].title
+         //<index.Path> acessa todos os filmes
+         //<.title> diz o que quer do conjunto de informações do filme
+         cell?.imageView.image = UIImage(named: popularMovies[indexPath.item].backdrop)*/
+        
+        return cell ?? PopularCollectionViewCell()
+    }
+    
+    fileprivate func makeNowPlayingCell(_ indexPath: IndexPath) -> NowPlayingCollectionViewCell {
+        let cell = nowPlayingCollectionView.dequeueReusableCell(withReuseIdentifier: NowPlayingCollectionViewCell.cellIdentifier, for: indexPath) as? NowPlayingCollectionViewCell
+        
+        let year: String = String(nowPlayingMovies[indexPath.item].releaseDate.prefix(4))
+        
+        cell?.setup(title: nowPlayingMovies[indexPath.item].title,
+                    year: year,
+                    image: UIImage(named: nowPlayingMovies[indexPath.item].poster) ?? UIImage())
+        
+        /*cell?.titleLabel.text = nowPlayingMovies[indexPath.item].title
+         let year: String = String(nowPlayingMovies[indexPath.item].releaseDate.prefix(4))
+         //ou interpolação de Strings: <"\(nowPlayingMovies[indexPath.item].releaseDate.prefix(4))">
+         cell?.dateLabel.text = year
+         cell?.imageView.image = UIImage(named: nowPlayingMovies[indexPath.item].poster)*/
+        
+        return cell ?? NowPlayingCollectionViewCell()
     }
 }

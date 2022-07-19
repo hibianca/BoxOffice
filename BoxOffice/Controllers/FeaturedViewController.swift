@@ -7,13 +7,14 @@
 
 import UIKit
 
-class FeaturedViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegate {
+class FeaturedViewController: UIViewController {
     
     let popularMovies = Movie.popularMovies()
     let nowPlayingMovies = Movie.nowPlayingMovies()
     
     @IBOutlet weak var popularCollectionView: UICollectionView!
     @IBOutlet weak var nowPlayingCollectionView: UICollectionView!
+    //acesso para as views
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -25,4 +26,16 @@ class FeaturedViewController: UIViewController, UICollectionViewDataSource, UICo
         nowPlayingCollectionView.delegate = self
         
     }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if let destination = segue.destination as? DetailsViewController {
+            //primeiro tem que identificar qual segue, o destino.
+            //if sempre acompanha um par de chaves
+            let movie = sender as? Movie
+            destination.movie = movie
+            //sender considera sendo do tipo <Movie>
+        }
+    }
+    //controlador sendo responsável para fazer a mudança de tela
+    
 }
