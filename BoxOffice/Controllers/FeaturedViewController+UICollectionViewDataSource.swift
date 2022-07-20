@@ -18,9 +18,13 @@ extension FeaturedViewController: UICollectionViewDataSource {
         } else if collectionView == self.nowPlayingCollectionView {
             return nowPlayingMovies.count
             
+        } else if collectionView == self.upcomingCollectionView {
+            return upcomingMovies.count
+            
         } else {
             return 0
         }
+        
     }
     //pega do modelo para a view
     
@@ -32,6 +36,9 @@ extension FeaturedViewController: UICollectionViewDataSource {
         } else if collectionView == nowPlayingCollectionView{
             return makeNowPlayingCell(indexPath)
             
+        } else if collectionView == upcomingCollectionView{
+            return makeUpcomingCell(indexPath)
+        
         } else {
             return UICollectionViewCell()
         }
@@ -40,7 +47,17 @@ extension FeaturedViewController: UICollectionViewDataSource {
     fileprivate func makePopularCell(_ indexPath: IndexPath) -> PopularCollectionViewCell {
         let cell = popularCollectionView.dequeueReusableCell(withReuseIdentifier: PopularCollectionViewCell.cellIdentifier, for: indexPath) as? PopularCollectionViewCell
         
-        cell?.setup(title: popularMovies[indexPath.item].title, image: UIImage(named: popularMovies[indexPath.item].backdrop) ?? UIImage())
+        let movie = popularMovies[indexPath.item]
+        
+        cell?.setup(title: popularMovies[indexPath.item].title, image: UIImage(named: popularMovies[indexPath.item].backdropPath) ?? UIImage())
+        
+        Task {
+            let imageData = await
+            Movie.downloadImageData(withPath: movie.backdropPath)
+            let imagem: UIImage = UIImage(data: imageData) ?? UIImage()
+            cell?.setup(title: movie.title,
+                        image: imagem)
+        }
         
         /*cell?.titleLabel.text = popularMovies[indexPath.item].title
          //<index.Path> acessa todos os filmes
@@ -57,7 +74,7 @@ extension FeaturedViewController: UICollectionViewDataSource {
         
         cell?.setup(title: nowPlayingMovies[indexPath.item].title,
                     year: year,
-                    image: UIImage(named: nowPlayingMovies[indexPath.item].poster) ?? UIImage())
+                    image: UIImage(named: nowPlayingMovies[indexPath.item].posterPath) ?? UIImage())
         
         /*cell?.titleLabel.text = nowPlayingMovies[indexPath.item].title
          let year: String = String(nowPlayingMovies[indexPath.item].releaseDate.prefix(4))
@@ -67,4 +84,17 @@ extension FeaturedViewController: UICollectionViewDataSource {
         
         return cell ?? NowPlayingCollectionViewCell()
     }
+    
+    fileprivate func makeUpcomingCell(_ indexPath: IndexPath) -> UpcomingCollectionViewCell {
+        let cell = upcomingCollectionView.dequeueReusableCell(withReuseIdentifier: UpcomingCollectionViewCell.cellIdentifier, for: indexPath) as? UpcomingCollectionViewCell
+        
+        let month: String = String(nowPlayingMovies[indexPath.item].releaseDate.prefix(4))
+        
+        cell?.setup(title: upcomingMovies[indexPath.item].title,
+                    month: month,
+                    image: UIImage(named: nowPlayingMovies[indexPath.item].posterPath) ?? UIImage())
+        
+        return cell ?? UpcomingCollectionViewCell()
+    }
+    
 }

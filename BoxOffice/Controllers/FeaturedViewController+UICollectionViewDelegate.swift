@@ -12,17 +12,20 @@ extension FeaturedViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         //<didSelectItem> para identificar que o usuário tocou em algum item
 
-        let movie: Movie
+        var movie: Movie
         //declara movie
         
         if collectionView == popularCollectionView {
             movie = popularMovies[indexPath.item]
             //passa o valor de movie | inicialização do valor da variável
             //o item do array vai ser aquele que o indexPath tá pedindo ou indicando
-        } else {
+        } else if collectionView == nowPlayingCollectionView {
             movie = nowPlayingMovies[indexPath.item]
+        } else {
+            movie = upcomingMovies[indexPath.item]
         }
+        
         self.performSegue(withIdentifier: "detailsSegue", sender: movie)
     }
-    
+
 }

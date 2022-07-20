@@ -22,7 +22,7 @@ class DetailsViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-                
+        
         guard let movie = movie else {
             return
         }
@@ -30,13 +30,24 @@ class DetailsViewController: UIViewController {
         title = movie.title
         //propriedade de título
         
-        backdropImage.image = UIImage(named: movie.backdrop)
+        backdropImage.image = UIImage(named: movie.backdropPath)
         titleLabel.text = movie.title
         
-        posterImage.image = UIImage(named: movie.poster)
+        posterImage.image = UIImage(named: movie.posterPath)
         ratingLabel.text = "Rating: \(movie.voteAverage)/10"
         
         overviewLabel.text = movie.overview
         
+        Task {
+            let imageDataBackdrop = await Movie.downloadImageData(withPath: movie.backdropPath)
+            let imageDataPoster = await Movie.downloadImageData(withPath: movie.posterPath)
+            let imageBackdrop: UIImage = UIImage(data: imageDataBackdrop) ?? UIImage()
+            let imagePoster: UIImage = UIImage(data: imageDataPoster) ?? UIImage()
+            backdropImage.image = imageBackdrop
+            posterImage.image = imagePoster
+            
+        }
+        
     }
+    
 }
